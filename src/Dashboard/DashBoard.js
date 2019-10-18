@@ -11,20 +11,22 @@ export default class Dashboard extends React.Component {
     return (
       <div className="block">
         <header>
-          {/* <div className="navContainer"> */}
-          <nav>
-            <a href="/dashboard">element</a>
-            <a href="/dashboard">element</a>
-            <a href="/dashboard">element</a>
-            <a href="/dashboard">element</a>
-          </nav>
-          {/* </div> */}
+          <div className="navContainer">
+            <nav>
+              <a href="/dashboard">element</a>
+              <a href="/dashboard">element</a>
+              <a href="/dashboard">element</a>
+              <a href="/dashboard">element</a>
+            </nav>
+          </div>
           <div className="logo">
             <img src={logo} alt="logo" />
           </div>
         </header>
         <section className="main">
-          <p>Section main</p>
+          <p>Now here need information about auth user</p>
+          <p>need implement how to target a group</p>
+          <p>button for exevuting</p>
         </section>
         <footer className="foot">
           <span>footer</span>
