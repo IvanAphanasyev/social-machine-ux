@@ -20,3 +20,10 @@
 .App-link {
   color: #09d3ac;
 }
+.App-header .error {
+  visibility: visible;
+  color: red;
+}
+.App-header .hidden {
+  visibility: hidden;
+}
