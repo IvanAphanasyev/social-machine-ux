@@ -40,6 +40,7 @@ class Auth extends React.Component {
     this.setState({ hasError: true });
   }
   render() {
+    console.log(process.env.NODE_ENV);
     const jwtObj = Cookies.get("jwt") ? JSON.parse(Cookies.get("jwt")) : null;
     console.log(jwtObj);
     if (jwtObj && jwt.expire(jwtObj.expiresIn)) {
