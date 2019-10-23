@@ -9,7 +9,7 @@ export default class fbButton extends React.Component {
   }
 
   render() {
-    console.log(this);
+    // console.log(this);
     return (
       <FacebookLogin
         appId="502524423931075" //APP ID NOT CREATED YET
@@ -17,6 +17,7 @@ export default class fbButton extends React.Component {
         callback={this.props.onClick}
         buttin={this}
         auth={this.props.auth}
+        SameSite="None"
         redirectUri="http://localhost:3000/dashboard"
       />
     );

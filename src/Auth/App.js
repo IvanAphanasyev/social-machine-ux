@@ -4,6 +4,8 @@ import fbButton from "./fbButton";
 import { Redirect } from "react-router";
 import Cookies from "js-cookie";
 
+import jwt from "../lib/jwt";
+
 import axios from "axios";
 
 import "./App.css";
@@ -15,32 +17,39 @@ class Auth extends React.Component {
     this.state = {
       button: fbButton,
       hasError: false,
-      redirect: false
+      redirect: false,
+      jwt: null
     };
   }
   async onClick(res) {
-    console.log(this);
     try {
-      const api = await axios.post("http://localhost:3001/api/v1/auth/login", {
-        facebook_access_token: res.accessToken
+      const api = await axios.post("http://localhost:7777/api/v1/auth/login", {
+        token: res.accessToken
       });
+      if (!api) this.auth.setState({ hasError: true });
 
       Cookies.set("jwt", api.data.jwt, { expires: api.data.jwt.expiresIn });
+      console.log(Cookies.get("jwt"));
 
       this.auth.setState({ redirect: true });
-      console.log(this);
     } catch (err) {
-      console.log(err);
+      this.auth.setState({ hasError: true });
     }
   }
   componentDidCatch(error, info) {
     this.setState({ hasError: true });
   }
   render() {
+    const jwtObj = Cookies.get("jwt") ? JSON.parse(Cookies.get("jwt")) : null;
+    console.log(jwtObj);
+    if (jwtObj && jwt.expire(jwtObj.expiresIn)) {
+      return <Redirect to="/dashboard" />;
+    }
+
     if (this.state.hasError) {
       return <h1>Error</h1>;
     }
-    console.log(this);
+    //console.log(this.state);
     if (this.state.redirect) {
       return <Redirect to="/dashboard" />;
     }
