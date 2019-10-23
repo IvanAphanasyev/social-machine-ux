@@ -5,8 +5,10 @@ import "./Dashboard.scss";
 import logo from "./Social Machine.svg";
 
 import Cookies from "js-cookie";
+
 import jwt from "../lib/jwt";
 import axios from "axios";
+import api from "../lib/api";
 
 export default class Dashboard extends React.Component {
   constructor(props) {
@@ -41,28 +43,25 @@ export default class Dashboard extends React.Component {
 
   componentDidMount() {
     !this.state.user &&
-      axios
-        .get("http://localhost:7777/api/v1/user", {
+      api
+        .get("/user", {
           headers: { accesstoken: JSON.parse(this.state.jwt).accessToken }
         })
         .then(user => this.setState({ user }));
   }
   componentDidUpdate() {
     !this.state.groups &&
-      axios
-        .get("http://localhost:7777/api/v1/user/groups", {
+      api
+        .get("/user/groups", {
           headers: { accesstoken: JSON.parse(this.state.jwt).accessToken }
         })
         .then(groups => this.setState({ groups }));
     !this.state.targetGroup &&
       this.state.targetGroupId &&
-      axios
-        .get(
-          `http://localhost:7777/api/v1/user/groups/${this.state.targetGroupId}`,
-          {
-            headers: { accesstoken: JSON.parse(this.state.jwt).accessToken }
-          }
-        )
+      api
+        .get(`/user/groups/${this.state.targetGroupId}`, {
+          headers: { accesstoken: JSON.parse(this.state.jwt).accessToken }
+        })
         .then(targetGroup => this.setState({ targetGroup }));
   }
   render() {

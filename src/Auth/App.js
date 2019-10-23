@@ -5,8 +5,7 @@ import { Redirect } from "react-router";
 import Cookies from "js-cookie";
 
 import jwt from "../lib/jwt";
-
-import axios from "axios";
+import api from "../lib/api";
 
 import "./App.css";
 //46215baaf894fc475faefe6a393e4b90
@@ -22,45 +21,48 @@ class Auth extends React.Component {
     };
   }
   async onClick(res) {
-    try {
-      const api = await axios.post("http://localhost:7777/api/v1/auth/login", {
+    api
+      .post("/auth/login", {
         token: res.accessToken
-      });
-      if (!api) this.auth.setState({ hasError: true });
-
-      Cookies.set("jwt", api.data.jwt, { expires: api.data.jwt.expiresIn });
-      console.log(Cookies.get("jwt"));
-
-      this.auth.setState({ redirect: true });
-    } catch (err) {
-      this.auth.setState({ hasError: true });
-    }
+      })
+      .then(res => {
+        Cookies.set("jwt", res.data.jwt);
+      })
+      .then(() => this.auth.setState({ redirect: true }))
+      .catch(err => this.auth.setState({ hasError: true }));
   }
+
   componentDidCatch(error, info) {
+    console.log(123213 + "f123");
     this.setState({ hasError: true });
   }
   render() {
-    console.log(process.env.NODE_ENV);
+    console.log(process.env);
     const jwtObj = Cookies.get("jwt") ? JSON.parse(Cookies.get("jwt")) : null;
     console.log(jwtObj);
     if (jwtObj && jwt.expire(jwtObj.expiresIn)) {
       return <Redirect to="/dashboard" />;
     }
 
-    if (this.state.hasError) {
-      return <h1>Error</h1>;
-    }
     //console.log(this.state);
     if (this.state.redirect) {
       return <Redirect to="/dashboard" />;
     }
-    let localClass = this.state.error ? "error" : "hidden";
     return (
       <div className="App">
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
+          {}
+          <p
+            style={{
+              color: "red",
+              visibility: this.state.hasError ? "visible" : "hidden"
+            }}
+          >
+            Some error with auth
+          </p>
+
           <this.state.button onClick={this.onClick} auth={this} />
-          <p className={localClass}>Some error with auth</p>
         </header>
         <div>123123123</div>
       </div>
