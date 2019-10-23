@@ -11,6 +11,7 @@
     "path": "^0.12.7",
     "react": "^16.10.2",
     "react-dom": "^16.10.2",
+    "react-facebook-login": "^4.1.1",
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.2.0"
   },
@@ -35,7 +36,5 @@
       "last 1 safari version"
     ]
   },
-  "devDependencies": {
-    "react-facebook-login": "^4.1.1"
-  }
+  "devDependencies": {}
 }
