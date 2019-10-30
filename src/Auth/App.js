@@ -1,73 +1,49 @@
-import React from "react";
-import logo from "../logo.png";
-import fbButton from "./fbButton";
+import React, { useState } from "react";
 import { Redirect } from "react-router";
-import Cookies from "js-cookie";
 
-import jwt from "../lib/jwt";
+import logo from "../logo.png";
+import Cookies from "js-cookie";
+import FbButton from "./fbButton";
+
 import api from "../lib/api";
 
 import "./App.css";
-//46215baaf894fc475faefe6a393e4b90
 
-class Auth extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      button: fbButton,
-      hasError: false,
-      redirect: false,
-      jwt: null
-    };
-  }
-  async onClick(res) {
+export default function Auth() {
+  const [redirect, setRedirect] = useState(false);
+  const [error, setError] = useState(false);
+
+  const handler = res => {
     api
-      .post("/auth/login", {
-        token: res.accessToken
-      })
+      .post(
+        "/auth/login",
+        {
+          token: res.accessToken
+        },
+        {}
+      )
       .then(res => {
+        console.log("set cookies after login");
         Cookies.set("jwt", res.data.jwt);
       })
-      .then(() => this.auth.setState({ redirect: true }))
-      .catch(err => this.auth.setState({ hasError: true }));
-  }
-
-  componentDidCatch(error, info) {
-    console.log(123213 + "f123");
-    this.setState({ hasError: true });
-  }
-  render() {
-    console.log(process.env);
-    const jwtObj = Cookies.get("jwt") ? JSON.parse(Cookies.get("jwt")) : null;
-    console.log(jwtObj);
-    if (jwtObj && jwt.expire(jwtObj.expiresIn)) {
-      return <Redirect to="/dashboard" />;
-    }
-
-    //console.log(this.state);
-    if (this.state.redirect) {
-      return <Redirect to="/dashboard" />;
-    }
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          {}
-          <p
-            style={{
-              color: "red",
-              visibility: this.state.hasError ? "visible" : "hidden"
-            }}
-          >
-            Some error with auth
-          </p>
-
-          <this.state.button onClick={this.onClick} auth={this} />
-        </header>
-        <div>123123123</div>
-      </div>
-    );
-  }
+      .then(() => setRedirect(true))
+      .catch(() => setError(true));
+  };
+  return (
+    <div className="App">
+      {redirect && <Redirect to="/dashboard" />}
+      <header className="App-header">
+        <img src={logo} className="App-logo" alt="logo" />
+        <p
+          style={{
+            color: "red",
+            visibility: error ? "visible" : "hidden"
+          }}
+        >
+          Some error with auth
+        </p>
+        <FbButton onClick={handler} auth={this} />
+      </header>
+    </div>
+  );
 }
-
-export default Auth;

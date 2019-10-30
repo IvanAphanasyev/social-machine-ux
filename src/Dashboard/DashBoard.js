@@ -1,38 +1,86 @@
-import React from "react";
+import React, { useState, useEffect, useReducer } from "react";
 import { Redirect } from "react-router";
 
 import "./Dashboard.scss";
-import logo from "./Social Machine.svg";
 
 import Cookies from "js-cookie";
 
-import jwt from "../lib/jwt";
-import axios from "axios";
+import Components from "./Components";
+
 import api from "../lib/api";
 
+const Dashboard = () => {
+  const [isVisLeft, setVisLeft] = useState(false);
+  const [user, setUser] = useState(null);
+
+  // eslint-disable-next-line no-unused-vars
+  const [ignored, forceUpdate] = useReducer(x => x + 1, 0);
+
+  const getUser = async () => {
+    api
+      .get("/user")
+      .then(response => {
+        setUser(response.data);
+        return "set user";
+      })
+      .catch(err => {
+        Cookies.remove("jwt");
+        forceUpdate();
+      });
+  };
+
+  useEffect(() => {
+    !user && Cookies.get("jwt") && getUser();
+  });
+
+  return (
+    <div className="block">
+      {!Cookies.get("jwt") && <Redirect to="/" />}
+      <header>
+        <Components.Navigation
+          showPanel={() => {
+            setVisLeft(!isVisLeft);
+          }}
+          isLeftVisible={isVisLeft}
+        />
+      </header>
+
+      <section>
+        <Components.AccPanel isVisible={isVisLeft} />
+        <div>privet</div>
+      </section>
+    </div>
+  );
+};
+export default Dashboard;
+
+/*
 export default class Dashboard extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      navigation: navigation,
       password: "",
       jwt: Cookies.get("jwt"),
       user: null,
       groups: null,
       targetGroupId: null,
-      targetGroup: null
+      targetGroup: null,
+      exec: null
     };
   }
   execute(state) {
     if (!state.password) {
-      console.log("password required animation");
+      console.log("password req animation");
+      this.setState({ passwordAnimation: true });
       return;
     }
     const options = {
       pass: state.password,
       idGroup: state.targetGroupId
     };
-    axios
-      .post("http://localhost:7777/api/v1/execute", options, {
+    api
+      .post("/execute", options, {
         headers: { accesstoken: JSON.parse(this.state.jwt).accessToken }
       })
       .then(res => {
@@ -64,6 +112,7 @@ export default class Dashboard extends React.Component {
         })
         .then(targetGroup => this.setState({ targetGroup }));
   }
+
   render() {
     if (!this.state.jwt || jwt.expire(JSON.parse(this.state.jwt))) {
       return <Redirect to="/" />;
@@ -76,19 +125,7 @@ export default class Dashboard extends React.Component {
     console.log(this.state);
     return (
       <div className="block">
-        <header>
-          <div className="navContainer">
-            <nav>
-              <a href="/dashboard">Dashboard</a>
-              <a href="/dashboard">element2</a>
-              <a href="/dashboard">element3</a>
-              <a href="/">element4</a>
-            </nav>
-          </div>
-          <div className="logo">
-            <img src={logo} alt="logo" />
-          </div>
-        </header>
+        <this.state.navigation />
         <section>
           <div className="userContent">
             <div className="picture">
@@ -108,8 +145,14 @@ export default class Dashboard extends React.Component {
                   type="password"
                   name="password"
                   value={this.state.password}
+                  style={{
+                    borderColor: this.state.passwordAnimation ? "red" : ""
+                  }}
                   onChange={event => {
-                    this.setState({ password: event.target.value });
+                    this.setState({
+                      password: event.target.value,
+                      passwordAnimation: false
+                    });
                   }}
                 ></input>
               </label>
@@ -163,7 +206,11 @@ export default class Dashboard extends React.Component {
               <div
                 className="back"
                 onClick={() =>
-                  this.setState({ targetGroupId: null, targetGroup: null })
+                  this.setState({
+                    targetGroupId: null,
+                    targetGroup: null,
+                    exec: null
+                  })
                 }
               >
                 {"<"}
@@ -184,7 +231,10 @@ export default class Dashboard extends React.Component {
                   <div
                     className="exec"
                     onClick={() => this.execute(this.state)}
-                    style={{ cursor: "pointer" }}
+                    style={{
+                      cursor: "pointer",
+                      background: this.state.exec ? "green" : ""
+                    }}
                   >
                     Exexution
                   </div>
@@ -198,3 +248,4 @@ export default class Dashboard extends React.Component {
     );
   }
 }
+*/
