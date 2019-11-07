@@ -2,37 +2,44 @@
 
 $navColor: darken($main-color, 5%);
 
-.navigation {
+nav {
+  min-height: $nav-height;
   background-color: $navColor;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  nav {
-    display: flex;
 
-    width: 100%;
-    img {
-      width: 20%;
-    }
-    a,
-    .navigation-target {
-      cursor: pointer;
-      text-align: center;
-      text-decoration: none;
-      color: white;
-      padding: 16px 40px;
-      &:hover {
-        color: aqua;
-        background-color: darken($navColor, 5%);
-        transition: background-color 0.2s linear;
-        transition: color 0.2s linear;
+  width: 100%;
+
+  ul {
+    min-height: $nav-height;
+    margin-right: $nav-height/4;
+    display: flex;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+    flex-flow: row nowrap;
+    box-sizing: border-box;
+    list-style: none;
+    li {
+      padding-top: $nav-height/4;
+      height: 100%;
+      a {
+        min-height: $nav-height;
+        padding: $nav-height/4 40px;
+        text-decoration: none;
+        vertical-align: middle;
+        height: 100%;
+        color: white;
+        i {
+          margin-left: 10px;
+        }
       }
-      font-size: 18px;
-      font-weight: 100;
+
+      &:hover {
+        background-color: lighten($navColor, 25%);
+        a {
+          color: aqua;
+        }
+        filter: brightness(0.8);
+      }
     }
-  }
-  .logo {
-    align-self: flex-end;
-    margin-bottom: 8px;
   }
 }

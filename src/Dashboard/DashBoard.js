@@ -10,9 +10,8 @@ import Components from "./Components";
 import api from "../lib/api";
 
 const Dashboard = () => {
-  const [isVisLeft, setVisLeft] = useState(false);
   const [user, setUser] = useState(null);
-
+  const [groups, setGroups] = useState(null);
   // eslint-disable-next-line no-unused-vars
   const [ignored, forceUpdate] = useReducer(x => x + 1, 0);
 
@@ -21,8 +20,9 @@ const Dashboard = () => {
       .get("/user")
       .then(response => {
         setUser(response.data);
-        return "set user";
       })
+      .then(() => api.get("/user/groups"))
+      .then(response => setGroups(response.data))
       .catch(err => {
         Cookies.remove("jwt");
         forceUpdate();
@@ -36,18 +36,12 @@ const Dashboard = () => {
   return (
     <div className="block">
       {!Cookies.get("jwt") && <Redirect to="/" />}
+      {<Components.AccPanel user={user} update={forceUpdate} groups={groups} />}
       <header>
-        <Components.Navigation
-          showPanel={() => {
-            setVisLeft(!isVisLeft);
-          }}
-          isLeftVisible={isVisLeft}
-        />
+        <Components.Navigation />
       </header>
-
       <section>
-        <Components.AccPanel isVisible={isVisLeft} />
-        <div>privet</div>
+        <Components.MainContetn />
       </section>
     </div>
   );

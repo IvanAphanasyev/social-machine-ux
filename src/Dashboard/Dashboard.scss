@@ -1,20 +1,14 @@
-* {
-  padding: 0;
-  margin: 0;
-}
-$colorTheme: #282c34; //#282c34
-$navColor: darken($colorTheme, 5%);
+@import "../index.scss";
+
 .block {
-  background-color: $colorTheme;
+  background-color: $main-color;
   min-height: 100vh;
+  width: 100%;
 
   section {
     display: flex;
+    height: $section-height;
+
     color: white;
-    height: 95vh;
-  }
-  footer {
-    background-color: $navColor;
-    min-height: 5vmin;
   }
 }

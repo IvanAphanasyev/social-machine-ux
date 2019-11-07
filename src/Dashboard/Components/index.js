@@ -1,4 +1,4 @@
 import Navigation from "./navigation/nav";
 import AccPanel from "./accPanel/accPanel";
-
-export default { Navigation, AccPanel };
+import MainContetn from "./mainContent/mainContetn";
+export default { Navigation, AccPanel, MainContetn };
