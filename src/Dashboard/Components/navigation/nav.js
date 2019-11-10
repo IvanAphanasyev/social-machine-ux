@@ -16,25 +16,36 @@ const navigation = props => {
           <i className="fas fa-arrow-left"></i>
         </div>
       )}*/}
+      <div className="profile" onClick={props.setVisible}>
+        <div className="profile-picture ">
+          <img alt="facebookPhoto" src={props.user && props.user.picture} />
+        </div>
+        <div className="profile-name">
+          <span>{props.user && props.user.name}</span>
+        </div>
+      </div>
+      <div style={{ flexGrow: "1" }} />
+      <div className="nav-list">
+        <a href="/#">
+          <span>Getting Started</span>
+        </a>
 
-      <div style={{ flexGrow: "1" }}></div>
-      <ul>
-        <li>
-          <a href="/#">Getting Started</a>
-        </li>
-        <li>
-          <a href="/#">FAQ</a>
-        </li>
-        <li>
-          <a href="/#">
+        <a href="/#">
+          <span>FAQ</span>
+        </a>
+
+        <a href="/#">
+          <span>
+            {" "}
             GitHub
             <i className="fab fa-github"></i>
-          </a>
-        </li>
-        <li>
-          <a href="/#">Need help?</a>
-        </li>
-      </ul>
+          </span>
+        </a>
+
+        <a href="/#">
+          <span>Need help?</span>
+        </a>
+      </div>
     </nav>
   );
 };

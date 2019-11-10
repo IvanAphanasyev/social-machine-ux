@@ -14,54 +14,64 @@ const AccPanel = props => {
   useEffect(() => {
     passwordInput.focus();
   });
-
   return (
     <div id="outer-container">
-      <Menu isOpen={true} tabIndex="3">
+      {props.isVisible && (
+        <div className="overlay" onClick={props.setVisible}></div>
+      )}
+      <Menu isOpen={props.isVisible} tabIndex="3" crossButtonClassName="">
         <div className="menuContent" tabIndex="3">
+          <button className="close" onClick={props.setVisible}></button>
           <div className="user-info">
-            <div className="user-info-photo">
-              <img alt="facebookPhoto" src={props.user && props.user.picture} />
+            <div className="user-info-email">
+              <input
+                type="text"
+                id="name"
+                //autoComplete="new-password"
+                required="required"
+                readOnly={props.user && props.user.email}
+                value={(props.user && props.user.email) || undefined}
+                onChange={e => {
+                  props.form.login = e.target.value;
+                  props.setForm(props.form);
+                }}
+              ></input>
+              <label
+                htmlFor="name"
+                style={{
+                  top: props.user && props.user.email && "-1em",
+                  fontSize: props.user && props.user.email && "0.8em"
+                }}
+              >
+                Email/Phone
+              </label>
             </div>
-            <div className="user-info-content">
-              <div className="user-info-content-static">
-                <div className="user-info-content-static-facebookName">
-                  Name:
-                  <br /> {props.user && props.user.name}
+            <div className="user-info-pass">
+              <div className="user-info-pass-input">
+                <input
+                  type={!wraper ? "text" : "password"}
+                  id="pass"
+                  required="required"
+                  //autoComplete="new-password"
+                  ref={input => {
+                    passwordInput = input;
+                  }}
+                  onChange={e => {
+                    props.form.password = e.target.value;
+                    props.setForm(props.form);
+                  }}
+                />
+                <label htmlFor="pass">Password</label>
+                <div
+                  className="user-info-pass-input-wraper"
+                  onClick={() => setWraper(!wraper)}
+                >
+                  {wraper ? (
+                    <i className="far fa-eye" />
+                  ) : (
+                    <i className="far fa-eye-slash" />
+                  )}
                 </div>
-                <div className="user-info-content-static-email">
-                  Email:
-                  <br /> {props.user && props.user.email}
-                </div>
-              </div>
-              <div className="user-info-content-input">
-                <label>
-                  {"Password: "}
-                  <br />
-                  <div className="user-info-content-input-target">
-                    <input
-                      type={wraper ? "password" : "text"}
-                      name="password"
-                      ref={input => {
-                        passwordInput = input;
-                      }}
-                    ></input>
-                    <div
-                      className="user-info-content-input-target-wraper"
-                      onClick={() => setWraper(!wraper)}
-                    >
-                      {wraper ? (
-                        <div className="user-info-content-input-target-wraper-eye">
-                          <i className="fas fa-eye"></i>
-                        </div>
-                      ) : (
-                        <div className="user-info-content-input-target-wraper-points">
-                          <i className="fas fa-eye-slash"></i>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </label>
               </div>
             </div>
           </div>
@@ -87,16 +97,10 @@ const AccPanel = props => {
                 About
               </span>
             </div>
-            <div className="footer-item" style={{ color: "#34495e" }}>
-              |
-            </div>
-            <div className="footer-item">
-              <span className="footer-item-fbp" href="/#">
+            <div className="footer-item footer-target">
+              <span className="footer-item-fbp #fb" href="/#">
                 Go to Facebook page
               </span>
-            </div>
-            <div className="footer-item" style={{ color: "#34495e" }}>
-              |
             </div>
             <div className="footer-item">
               <span
@@ -122,25 +126,23 @@ const Group = group => {
   const [hover, setHover] = useState(false);
   const background = group.cover.source;
   return (
-    <div>
+    <div
+      className="groups-content-group"
+      onMouseEnter={() => !hover && setHover(true)}
+      onMouseLeave={() => hover && setHover(false)}
+      key={group.id}
+    >
       <div
-        className="groups-content-group"
-        key={group.id}
+        className="groups-content-group-target"
         style={{
-          backgroundImage: hover && `url(${background})`,
+          backgroundImage: `url(${background})`,
           backgroundPosition: "center",
           backgroundSize: "cover",
-          backgroundRepeat: "no-repeat",
-          opacity: hover && "0.5",
-          borderRadius: "10%"
+          backgroundRepeat: "no-repeat"
         }}
-        onMouseEnter={() => !hover && setHover(true)}
-        onMouseLeave={() => hover && setHover(false)}
-      >
-        <div style={{ visibility: hover && "hidden" }}>{group.name}</div>
-      </div>
+      ></div>
       {hover && (
-        <div className="animation" style={{ position: "absolute" }}>
+        <div className="groups-content-group-animation">
           <div className="title">{group.name}</div>
         </div>
       )}

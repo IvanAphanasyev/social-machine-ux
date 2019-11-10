@@ -10,6 +10,11 @@ import Components from "./Components";
 import api from "../lib/api";
 
 const Dashboard = () => {
+  const [isVisibleMenu, setVisibleMenu] = useState(false);
+  const [form, setForm] = useState({
+    login: "",
+    password: ""
+  });
   const [user, setUser] = useState(null);
   const [groups, setGroups] = useState(null);
   // eslint-disable-next-line no-unused-vars
@@ -36,12 +41,25 @@ const Dashboard = () => {
   return (
     <div className="block">
       {!Cookies.get("jwt") && <Redirect to="/" />}
-      {<Components.AccPanel user={user} update={forceUpdate} groups={groups} />}
+      {
+        <Components.AccPanel
+          user={user}
+          update={forceUpdate}
+          groups={groups}
+          isVisible={isVisibleMenu}
+          setVisible={() => setVisibleMenu(!isVisibleMenu)}
+          form={form}
+          setForm={setForm}
+        />
+      }
       <header>
-        <Components.Navigation />
+        <Components.Navigation
+          setVisible={() => setVisibleMenu(!isVisibleMenu)}
+          user={user}
+        />
       </header>
       <section>
-        <Components.MainContetn />
+        <Components.MainContetn {...form} />
       </section>
     </div>
   );
