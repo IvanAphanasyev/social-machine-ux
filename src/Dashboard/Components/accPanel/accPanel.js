@@ -1,4 +1,4 @@
-import React, { useState, useReducer, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { slide as Menu } from "react-burger-menu";
 import Cookies from "js-cookie";
 import Loader from "./helper";
@@ -9,8 +9,9 @@ const AccPanel = props => {
   let passwordInput;
   // eslint-disable-next-line no-unused-vars
   const [wraper, setWraper] = useState(true);
-  // eslint-disable-next-line no-unused-vars
-  const [ignored, forceUpdate] = useReducer(x => x + 1, 0);
+
+  const [staticGroup, setStaticGroup] = useState(false);
+
   useEffect(() => {
     passwordInput.focus();
   });
@@ -75,14 +76,31 @@ const AccPanel = props => {
               </div>
             </div>
           </div>
+          <div className="options">
+            <div
+              className="options-btn"
+              onClick={() => setStaticGroup(false)}
+              style={{ backgroundColor: !staticGroup && "white" }}
+            >
+              Facebook groups
+            </div>
+            <div
+              className="options-btn"
+              onClick={() => setStaticGroup(true)}
+              style={{ backgroundColor: staticGroup && "white" }}
+            >
+              Saved groups
+            </div>
+          </div>
           <div className="groups">
             <div
               className="groups-content"
               style={{
-                overflowY: "scroll"
+                overflowY: "scroll",
+                display: !props.groups && !props.staticGroups && "flex"
               }}
             >
-              {props.groups ? (
+              {!staticGroup && props.groups ? (
                 props.groups.map(group => {
                   return <Group {...group} key={group.id} />;
                 })

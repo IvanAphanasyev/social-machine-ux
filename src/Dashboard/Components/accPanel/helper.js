@@ -4,7 +4,13 @@ const Helper = () => {
   return (
     <div
       className="lds-spinner"
-      style={{ alignSelf: "center", margin: "auto" }}
+      style={{
+        alignSelf: "center",
+        margin: "auto",
+        justifyContent: "center",
+        textAlign: "center",
+        verticalAlign: "middle"
+      }}
     >
       <div></div>
       <div></div>

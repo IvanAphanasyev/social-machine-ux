@@ -18,7 +18,6 @@ export default class fbButton extends React.Component {
         buttin={this}
         auth={this.props.auth}
         SameSite="None"
-        redirectUri="http://localhost:3000/dashboard"
       />
     );
   }
