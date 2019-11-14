@@ -117,6 +117,7 @@ const AccPanel = props => {
                 <Loader />
               )}
             </div>
+            {staticGroup && <AddGroup update={() => props.update()} />}
           </div>
           <div className="footer">
             <div className="footer-item">
@@ -238,6 +239,44 @@ const Saved = group => {
           </div>
         )
       )}
+    </div>
+  );
+};
+
+const AddGroup = props => {
+  const [value, setValue] = useState("");
+  const [invalid, setInvalid] = useState(false);
+
+  const clickHandle = () => {
+    const pattern = /^(\https:\/\/www.facebook.com\/groups\/)(\w+)$/;
+    if (pattern.test(value)) {
+      const identifier = pattern.exec(value)[2];
+      api
+        .post("/user/savedGroups/save", { identifier: identifier })
+        .catch(err => console.log(err));
+    } else {
+      setInvalid(true);
+    }
+  };
+
+  return (
+    <div className="groups-add">
+      <input
+        type="text"
+        name="group"
+        value={value}
+        onChange={e => {
+          setValue(e.target.value);
+          setInvalid(false);
+        }}
+        style={{ border: invalid && "3px solid red" }}
+      />
+      <button className="groups-add-hight" onClick={clickHandle}>
+        <span>Add group</span>
+      </button>
+      <button className="groups-add-low" onClick={clickHandle}>
+        <span>+</span>
+      </button>
     </div>
   );
 };

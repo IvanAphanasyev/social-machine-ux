@@ -15,7 +15,7 @@ $menu-color: darken($main-color, 10%);
   height: 100%;
   .user-info {
     padding: 10px 60px;
-    height: 20vh;
+    height: 15vh;
     border: $border-color solid;
     border-radius: 20px;
     display: flex;
@@ -40,7 +40,7 @@ $menu-color: darken($main-color, 10%);
         color: $font-color;
         background: none;
         border: none;
-        border-bottom: 1px solid #fff;
+        border-bottom: 1px solid $font-color;
         transition: 0.2s ease-out;
         &:valid {
           ~ label {
@@ -91,7 +91,75 @@ $menu-color: darken($main-color, 10%);
     border: $border-color 3px solid;
     height: 40vh;
     border-radius: 20px;
+    position: relative;
+    .groups-add {
+      visibility: hidden;
+      display: flex;
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      margin-bottom: 10px;
+      input {
+        cursor: pointer;
+        font-family: cursive;
+        border: none;
+        background: none;
+        padding: 5px 45px;
+        text-align: center;
+        font-size: 0.8em;
+        color: white;
+        background: none;
+        border: none;
+        border-bottom: 1px solid white;
+        transition: 0.2s ease-in;
+        filter: brightness(0.9);
+        &:focus {
+          visibility: visible;
+          ~ button {
+            visibility: visible;
+          }
+          border: 3px solid $border-color;
+          border-radius: 20px;
+        }
+        &:-webkit-autofill {
+          box-shadow: 0 0 0px 1000px $menu-color inset;
+          -webkit-text-fill-color: $font-color !important;
+          border: 3px solid $border-color;
+          border-radius: 20px;
+        }
+      }
+      button {
+        display: flex;
+        span {
+          width: 80px;
+        }
+
+        cursor: pointer;
+        filter: brightness(0.9);
+        transition: all 0.2s ease-in;
+        font-family: cursive;
+        font-size: 0.8em;
+        color: $font-color;
+        padding: 5px 40px;
+        border: 3px solid $border-color;
+        border-radius: 20px;
+        background-color: darken($main-color, 15%);
+        text-align: center;
+        width: 100%;
+        &:active {
+          box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.2);
+        }
+        &:hover {
+          background-color: darken($main-color, 25%);
+        }
+      }
+      .groups-add-low {
+        display: none;
+      }
+    }
     &-content {
+      position: relative;
       text-align: center;
 
       &::-webkit-scrollbar {
@@ -111,6 +179,7 @@ $menu-color: darken($main-color, 10%);
       }
       width: 100%;
       margin: 10px 10px 20px 20px;
+
       &-group {
         position: relative;
         cursor: pointer;
@@ -130,13 +199,13 @@ $menu-color: darken($main-color, 10%);
           text-align: center;
           transform: translate(-50%, -50%);
         }
-        &:hover {
+        &:hover,
+        &:focus {
           .groups-content-group-target {
             opacity: 0.2;
           }
         }
-        &:hover,
-        &:focus {
+        &:hover {
           .groups-content-group-target {
             transform: scale(1.02);
             transition: all 0.5s;
@@ -145,6 +214,9 @@ $menu-color: darken($main-color, 10%);
       }
     }
     &:hover {
+      .groups-add {
+        visibility: visible;
+      }
       .groups-content::-webkit-scrollbar-thumb {
         background: $border-color;
         visibility: visible;
@@ -308,6 +380,21 @@ $menu-color: darken($main-color, 10%);
     .groups {
       .groups-content {
         margin: 5px 5px 5px 0;
+      }
+      .groups-add {
+        input {
+          width: 230px;
+        }
+        .groups-add-hight {
+          display: none;
+        }
+        .groups-add-low {
+          display: block;
+          padding: 5px 20px;
+          span {
+            width: 40px;
+          }
+        }
       }
     }
   }
