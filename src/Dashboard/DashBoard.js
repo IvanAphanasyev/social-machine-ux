@@ -10,13 +10,14 @@ import Components from "./Components";
 import api from "../lib/api";
 
 const Dashboard = () => {
-  const [isVisibleMenu, setVisibleMenu] = useState(true);
+  const [isVisibleMenu, setVisibleMenu] = useState(false);
   const [form, setForm] = useState({
     login: "",
     password: ""
   });
   const [user, setUser] = useState(null);
   const [groups, setGroups] = useState(null);
+  const [saved, setSaved] = useState(null);
   // eslint-disable-next-line no-unused-vars
   const [ignored, forceUpdate] = useReducer(x => x + 1, 0);
 
@@ -28,6 +29,8 @@ const Dashboard = () => {
       })
       .then(() => api.get("/user/groups"))
       .then(response => setGroups(response.data))
+      .then(() => api.get("/user/savedGroups"))
+      .then(response => setSaved(response.data))
       .catch(err => {
         Cookies.remove("jwt");
         forceUpdate();
@@ -50,6 +53,7 @@ const Dashboard = () => {
           setVisible={() => setVisibleMenu(!isVisibleMenu)}
           form={form}
           setForm={setForm}
+          saved = {saved}
         />
       }
       <header>

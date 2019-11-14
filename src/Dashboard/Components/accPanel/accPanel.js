@@ -3,6 +3,10 @@ import { slide as Menu } from "react-burger-menu";
 import Cookies from "js-cookie";
 import Loader from "./helper";
 
+import groupImage from "./facebookGroup.jpg";
+
+import api from "../../../lib/api";
+
 import "./accPanel.scss";
 
 const AccPanel = props => {
@@ -13,7 +17,7 @@ const AccPanel = props => {
   const [staticGroup, setStaticGroup] = useState(false);
 
   useEffect(() => {
-    passwordInput.focus();
+    !passwordInput.value && passwordInput.focus();
   });
   return (
     <div id="outer-container">
@@ -80,14 +84,14 @@ const AccPanel = props => {
             <div
               className="options-btn"
               onClick={() => setStaticGroup(false)}
-              style={{ backgroundColor: !staticGroup && "white" }}
+              style={{ backgroundColor: !staticGroup && "#34495e" }}
             >
               Facebook groups
             </div>
             <div
               className="options-btn"
               onClick={() => setStaticGroup(true)}
-              style={{ backgroundColor: staticGroup && "white" }}
+              style={{ backgroundColor: staticGroup && "#34495e" }}
             >
               Saved groups
             </div>
@@ -100,9 +104,14 @@ const AccPanel = props => {
                 display: !props.groups && !props.staticGroups && "flex"
               }}
             >
+              {}
               {!staticGroup && props.groups ? (
                 props.groups.map(group => {
                   return <Group {...group} key={group.id} />;
+                })
+              ) : staticGroup && props.saved ? (
+                props.saved.map(group => {
+                  return <Saved {...group} key={group.id} />;
                 })
               ) : (
                 <Loader />
@@ -163,6 +172,71 @@ const Group = group => {
         <div className="groups-content-group-animation">
           <div className="title">{group.name}</div>
         </div>
+      )}
+    </div>
+  );
+};
+
+const Saved = group => {
+  const [hover, setHover] = useState(false);
+
+  const num =
+    !isNaN(parseFloat(group.identifier)) && isFinite(group.identifier);
+  const [fbGroup, setfbGroup] = useState(null);
+  useEffect(() => {
+    !fbGroup &&
+      num &&
+      api
+        .get(`/user/groups/${group.identifier}`)
+        .then(resonse => setfbGroup(resonse.data))
+        .catch(err =>
+          console.log(`in Saved with identifer group - ${group.identifier}`)
+        );
+  });
+  return (
+    <div
+      className="groups-content-group"
+      onMouseEnter={() => !hover && setHover(true)}
+      onMouseLeave={() => hover && setHover(false)}
+      key={group.id}
+    >
+      {num ? (
+        fbGroup ? (
+          <div
+            className="groups-content-group-target"
+            style={{
+              backgroundImage: `url(${fbGroup && fbGroup.cover.source})`,
+              backgroundPosition: "center",
+              backgroundSize: "cover",
+              backgroundRepeat: "no-repeat",
+              opacity: !num && "0.5"
+            }}
+          />
+        ) : (
+          <Loader />
+        )
+      ) : (
+        <div
+          className="groups-content-group-target"
+          style={{
+            backgroundImage: `url(${groupImage})`,
+            backgroundPosition: "center",
+            backgroundSize: "cover",
+            backgroundRepeat: "no-repeat",
+            opacity: !num && "0.5"
+          }}
+        />
+      )}
+      {num && hover ? (
+        <div className="groups-content-group-animation">
+          <div className="title">{fbGroup && fbGroup.name}</div>
+        </div>
+      ) : (
+        !num && (
+          <div className="groups-content-group-animation">
+            <div className="title">{group.identifier}</div>
+          </div>
+        )
       )}
     </div>
   );
