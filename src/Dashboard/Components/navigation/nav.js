@@ -1,8 +1,20 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 
 import "./nav.scss";
+import Cookies from "js-cookie";
+import api from "../../../lib/api";
 
-const navigation = props => {
+const Navigation = props => {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    !user &&
+      Cookies.get("jwt") &&
+      api.get("/user").then(response => {
+        setUser(response.data);
+      });
+  });
+
   return (
     <nav>
       {/*
@@ -18,10 +30,10 @@ const navigation = props => {
       )}*/}
       <div className="profile" onClick={props.setVisible}>
         <div className="profile-picture ">
-          <img alt="facebookPhoto" src={props.user && props.user.picture} />
+          <img alt="facebookPhoto" src={user && user.picture} />
         </div>
         <div className="profile-name">
-          <span>{props.user && props.user.name}</span>
+          <span>{user && user.name}</span>
         </div>
       </div>
       <div style={{ flexGrow: "1" }} />
@@ -49,4 +61,4 @@ const navigation = props => {
     </nav>
   );
 };
-export default navigation;
+export default Navigation;

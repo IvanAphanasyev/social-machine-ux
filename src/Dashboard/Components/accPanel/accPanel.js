@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useReducer } from "react";
 import { slide as Menu } from "react-burger-menu";
 import Cookies from "js-cookie";
 import Loader from "./helper";
@@ -10,15 +10,13 @@ import api from "../../../lib/api";
 import "./accPanel.scss";
 
 const AccPanel = props => {
-  let passwordInput;
   // eslint-disable-next-line no-unused-vars
-  const [wraper, setWraper] = useState(true);
 
   const [staticGroup, setStaticGroup] = useState(false);
 
-  useEffect(() => {
-    !passwordInput.value && passwordInput.focus();
-  });
+  // eslint-disable-next-line no-unused-vars
+  const [ignored, forceUpdate] = useReducer(x => x + 1, 0);
+
   return (
     <div id="outer-container">
       {props.isVisible && (
@@ -27,59 +25,7 @@ const AccPanel = props => {
       <Menu isOpen={props.isVisible} tabIndex="3" crossButtonClassName="">
         <div className="menuContent" tabIndex="3">
           <button className="close" onClick={props.setVisible}></button>
-          <div className="user-info">
-            <div className="user-info-email">
-              <input
-                type="text"
-                id="name"
-                //autoComplete="new-password"
-                required="required"
-                readOnly={props.user && props.user.email}
-                value={(props.user && props.user.email) || undefined}
-                onChange={e => {
-                  props.form.login = e.target.value;
-                  props.setForm(props.form);
-                }}
-              ></input>
-              <label
-                htmlFor="name"
-                style={{
-                  top: props.user && props.user.email && "-1em",
-                  fontSize: props.user && props.user.email && "0.8em"
-                }}
-              >
-                Email/Phone
-              </label>
-            </div>
-            <div className="user-info-pass">
-              <div className="user-info-pass-input">
-                <input
-                  type={!wraper ? "text" : "password"}
-                  id="pass"
-                  required="required"
-                  //autoComplete="new-password"
-                  ref={input => {
-                    passwordInput = input;
-                  }}
-                  onChange={e => {
-                    props.form.password = e.target.value;
-                    props.setForm(props.form);
-                  }}
-                />
-                <label htmlFor="pass">Password</label>
-                <div
-                  className="user-info-pass-input-wraper"
-                  onClick={() => setWraper(!wraper)}
-                >
-                  {wraper ? (
-                    <i className="far fa-eye" />
-                  ) : (
-                    <i className="far fa-eye-slash" />
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
+          <UserStatic form={props.form} setForm={props.setForm} />
           <div className="options">
             <div
               className="options-btn"
@@ -96,29 +42,7 @@ const AccPanel = props => {
               Saved groups
             </div>
           </div>
-          <div className="groups">
-            <div
-              className="groups-content"
-              style={{
-                overflowY: "scroll",
-                display: !props.groups && !props.staticGroups && "flex"
-              }}
-            >
-              {}
-              {!staticGroup && props.groups ? (
-                props.groups.map(group => {
-                  return <Group {...group} key={group.id} />;
-                })
-              ) : staticGroup && props.saved ? (
-                props.saved.map(group => {
-                  return <Saved {...group} key={group.id} />;
-                })
-              ) : (
-                <Loader />
-              )}
-            </div>
-            {staticGroup && <AddGroup update={() => props.update()} />}
-          </div>
+          <Content staticGroup={staticGroup} />
           <div className="footer">
             <div className="footer-item">
               <span className="footer-item-about" href="/#">
@@ -248,11 +172,15 @@ const AddGroup = props => {
   const [invalid, setInvalid] = useState(false);
 
   const clickHandle = () => {
-    const pattern = /^(\https:\/\/www.facebook.com\/groups\/)(\w+)$/;
+    const pattern = /^(https:\/\/www.facebook.com\/groups\/)(\w+)$/;
     if (pattern.test(value)) {
       const identifier = pattern.exec(value)[2];
       api
         .post("/user/savedGroups/save", { identifier: identifier })
+        .then(response => {
+          props.update();
+          console.log("update?");
+        })
         .catch(err => console.log(err));
     } else {
       setInvalid(true);
@@ -277,6 +205,139 @@ const AddGroup = props => {
       <button className="groups-add-low" onClick={clickHandle}>
         <span>+</span>
       </button>
+    </div>
+  );
+};
+
+const FacebookGroups = props => {
+  const [fbGroups, setFbGroups] = useState(null);
+  useEffect(() => {
+    !fbGroups &&
+      api.get("/user/groups").then(response => setFbGroups(response.data));
+  });
+  return fbGroups ? (
+    fbGroups.map(group => {
+      return <Group {...group} key={group.id} />;
+    })
+  ) : (
+    <Loader />
+  );
+};
+
+const SavedGroups = props => {
+  const [saved, setSaved] = useState(null);
+  useEffect(() => {
+    !saved &&
+      api.get("/user/savedGroups").then(response => setSaved(response.data));
+  });
+  return saved ? (
+    saved.map(group => {
+      return <Saved {...group} key={group.id} />;
+    })
+  ) : (
+    <Loader />
+  );
+};
+
+const Content = props => {
+  // eslint-disable-next-line no-unused-vars
+  const [ignored, forceUpdate] = useReducer(x => x + 1, 0);
+
+  return (
+    <div className="groups">
+      <div
+        className="groups-content"
+        style={{
+          overflowY: "scroll"
+        }}
+      >
+        {}
+        {!props.staticGroup ? (
+          <FacebookGroups groups={props.groups} />
+        ) : (
+          <SavedGroups saved={props.saved} />
+        )}
+      </div>
+      {props.staticGroup && (
+        <AddGroup
+          update={() => {
+            forceUpdate();
+            console.log("here");
+          }}
+        />
+      )}
+    </div>
+  );
+};
+
+const UserStatic = props => {
+  let passwordInput;
+  const [wraper, setWraper] = useState(true);
+  useEffect(() => {
+    !passwordInput.value && passwordInput.focus();
+  });
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    !user &&
+      Cookies.get("jwt") &&
+      api.get("/user").then(response => {
+        setUser(response.data);
+      });
+  });
+  return (
+    <div className="user-info">
+      <div className="user-info-email">
+        <input
+          type="text"
+          id="name"
+          autoComplete="new-password"
+          required="required"
+          readOnly={user && user.email}
+          value={(user && user.email) || undefined}
+          onChange={e => {
+            props.form.login = e.target.value;
+            props.setForm(props.form);
+          }}
+        ></input>
+        <label
+          htmlFor="name"
+          style={{
+            top: props.user && props.user.email && "-1em",
+            fontSize: props.user && props.user.email && "0.8em"
+          }}
+        >
+          Email/Phone
+        </label>
+      </div>
+      <div className="user-info-pass">
+        <div className="user-info-pass-input">
+          <input
+            type={!wraper ? "text" : "password"}
+            id="pass"
+            required="required"
+            //autoComplete="new-password"
+            ref={input => {
+              passwordInput = input;
+            }}
+            onChange={e => {
+              props.form.password = e.target.value;
+              props.setForm(props.form);
+            }}
+          />
+          <label htmlFor="pass">Password</label>
+          <div
+            className="user-info-pass-input-wraper"
+            onClick={() => setWraper(!wraper)}
+          >
+            {wraper ? (
+              <i className="far fa-eye" />
+            ) : (
+              <i className="far fa-eye-slash" />
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

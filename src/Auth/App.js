@@ -14,6 +14,7 @@ export default function Auth() {
   const [error, setError] = useState(false);
 
   const handler = res => {
+    console.log(res);
     api
       .post(
         "/auth/login",

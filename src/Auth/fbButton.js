@@ -1,24 +1,22 @@
 import React from "react";
 
 import FacebookLogin from "react-facebook-login";
+const FbButton = props => {
+  return (
+    <FacebookLogin
+      appId="502524423931075"
+      fields="name,email,picture"
+      callback={props.onClick}
+      icon="fab fa-facebook-f"
+      state="111"
+    />
+  );
+};
 
-export default class fbButton extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {};
-  }
-
-  render() {
-    // console.log(this);
-    return (
-      <FacebookLogin
+export default FbButton;
+/* <FacebookLogin
         appId="502524423931075" //APP ID NOT CREATED YET
         fields="name,email,picture"
         callback={this.props.onClick}
-        buttin={this}
         auth={this.props.auth}
-        SameSite="None"
-      />
-    );
-  }
-}
+      />*/
