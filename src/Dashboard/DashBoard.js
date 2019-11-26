@@ -34,7 +34,7 @@ const Dashboard = () => {
         />
       </header>
       <section>
-        <Components.MainContetn {...form} />
+        <Components.MainContetn {...{ form, setVisibleMenu }} />
       </section>
     </div>
   );

@@ -1,10 +1,16 @@
 import React, { useEffect, useState } from "react";
 import "./mainContent.scss";
+import api from "../../../lib/api";
 
 const MainContent = props => {
   const [wss, setWss] = useState(null);
   const [message, setMessage] = useState(null);
-  useEffect(() => console.log("main updated"));
+  const [user, setUser] = useState(null);
+  useEffect(() => {
+    //(!props.form.login || !props.form.password) && props.setVisibleMenu(true);
+    !user && api.get("/user").then(response => setUser(response.data));
+    console.log(props);
+  });
 
   const close = () => {
     if (!wss) return;
@@ -14,7 +20,10 @@ const MainContent = props => {
     if (!wss || wss.readyState === WebSocket.CLOSED) {
       console.log("opening websoket");
 
-      const ws = new WebSocket("ws://localhost:7777/ws");
+      const ws = new WebSocket(
+        `ws://username:password@localhost:7777/ws?username=${props.form.login}&password=${props.form.password}`,
+        [`${user.id}`]
+      );
       ws.onopen = () => {
         console.log("connected");
       };
@@ -24,6 +33,7 @@ const MainContent = props => {
         console.log(received);
         setMessage(received);
       };
+
       ws.onclose = () => {
         console.log("disconnected");
         setMessage("disconnected");
@@ -43,7 +53,7 @@ const MainContent = props => {
       <button className="start" onClick={connect}>
         Start
       </button>
-      <div>{message}</div>
+      <div dangerouslySetInnerHTML={{ __html: message }}></div>
       <button onClick={close}>1232131</button>
       <button
         onClick={() => {
@@ -67,8 +77,32 @@ const MainContent = props => {
         send message
       </button>
       <div>
-        <button>prev</button>
-        <button>next</button>
+        <button
+          onClick={() => {
+            //code that send through websocket command "go to previous post"
+            wss.send(
+              JSON.stringify({
+                type: "prev",
+                data: null
+              })
+            );
+          }}
+        >
+          prev
+        </button>
+        <button
+          onClick={() => {
+            //next post
+            wss.send(
+              JSON.stringify({
+                type: "next",
+                data: null
+              })
+            );
+          }}
+        >
+          next
+        </button>
       </div>
     </div>
   );

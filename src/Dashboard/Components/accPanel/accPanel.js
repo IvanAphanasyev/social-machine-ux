@@ -282,7 +282,12 @@ const UserStatic = props => {
     !user &&
       Cookies.get("jwt") &&
       api.get("/user").then(response => {
-        setUser(response.data);
+        const data = response.data;
+        if (data.email) {
+          props.form.login = data.email;
+          props.setForm(props.form);
+        }
+        setUser(data);
       });
   });
   return (
@@ -293,8 +298,7 @@ const UserStatic = props => {
           id="name"
           autoComplete="new-password"
           required="required"
-          readOnly={user && user.email}
-          value={(user && user.email) || undefined}
+          focus={123}
           onChange={e => {
             props.form.login = e.target.value;
             props.setForm(props.form);
@@ -303,8 +307,8 @@ const UserStatic = props => {
         <label
           htmlFor="name"
           style={{
-            top: props.user && props.user.email && "-1em",
-            fontSize: props.user && props.user.email && "0.8em"
+            top: user && user.email && "-1em",
+            fontSize: user && user.email && "0.8em"
           }}
         >
           Email/Phone
